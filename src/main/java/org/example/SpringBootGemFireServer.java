@@ -23,6 +23,7 @@ import org.springframework.data.gemfire.PartitionedRegionFactoryBean;
 import org.springframework.data.gemfire.RegionAttributesFactoryBean;
 import org.springframework.data.gemfire.server.CacheServerFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A Spring Boot application bootstrapping a Pivotal GemFire Server in the JVM process.
@@ -41,6 +42,7 @@ public class SpringBootGemFireServer {
 
 	protected static final int DEFAULT_CACHE_SERVER_PORT = CacheServer.DEFAULT_PORT;
 	protected static final int DEFAULT_LOCATOR_PORT = DistributionLocator.DEFAULT_LOCATOR_PORT;
+	protected static final int DEFAULT_MANAGER_PORT = 1199;
 
 	protected static final String DEFAULT_LOG_LEVEL = "config";
 
@@ -57,7 +59,8 @@ public class SpringBootGemFireServer {
 	@Bean
 	Properties gemfireProperties(@Value("${spring.gemfire.log-level:"+DEFAULT_LOG_LEVEL+"}") String logLevel,
 			@Value("${spring.gemfire.locators:localhost["+DEFAULT_LOCATOR_PORT+"]}") String locators,
-			@Value("${spring.gemfire.manager.port:1199}") int managerPort) {
+			@Value("${spring.gemfire.manager.port:"+DEFAULT_MANAGER_PORT+"}") int managerPort,
+			@Value("${spring.gemfire.start-locator}") String startLocator) {
 
 		logger.warn("spring.gemfire.log-level is [{}]", logLevel);
 
@@ -70,6 +73,10 @@ public class SpringBootGemFireServer {
 		gemfireProperties.setProperty("jmx-manager", "true");
 		gemfireProperties.setProperty("jmx-manager-port", String.valueOf(managerPort));
 		gemfireProperties.setProperty("jmx-manager-start", "true");
+
+		if (StringUtils.hasText(startLocator)) {
+			gemfireProperties.setProperty("start-locator", startLocator);
+		}
 
 		return gemfireProperties;
 	}

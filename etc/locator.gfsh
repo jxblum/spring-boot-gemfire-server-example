@@ -1,0 +1,1 @@
+start locator --name="GemFireLocator" --log-level=config

@@ -60,6 +60,7 @@ public class SpringBootGemFireServer {
 	Properties gemfireProperties(@Value("${spring.gemfire.log-level:"+DEFAULT_LOG_LEVEL+"}") String logLevel,
 			@Value("${spring.gemfire.locators:localhost["+DEFAULT_LOCATOR_PORT+"]}") String locators,
 			@Value("${spring.gemfire.manager.port:"+DEFAULT_MANAGER_PORT+"}") int managerPort,
+			@Value("${spring.gemfire.manager.start:false}") boolean jmxManagerStart,
 			@Value("${spring.gemfire.start-locator}") String startLocator) {
 
 		logger.warn("spring.gemfire.log-level is [{}]", logLevel);
@@ -72,7 +73,7 @@ public class SpringBootGemFireServer {
 		gemfireProperties.setProperty("locators", locators);
 		gemfireProperties.setProperty("jmx-manager", "true");
 		gemfireProperties.setProperty("jmx-manager-port", String.valueOf(managerPort));
-		gemfireProperties.setProperty("jmx-manager-start", "true");
+		gemfireProperties.setProperty("jmx-manager-start", String.valueOf(jmxManagerStart));
 
 		if (StringUtils.hasText(startLocator)) {
 			gemfireProperties.setProperty("start-locator", startLocator);

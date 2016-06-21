@@ -4,4 +4,6 @@ build/
 *.iws
 *.ipr
 *.iml
+*.log
+*.dat
 

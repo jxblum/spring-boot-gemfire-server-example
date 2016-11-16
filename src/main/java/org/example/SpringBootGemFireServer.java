@@ -42,7 +42,7 @@ public class SpringBootGemFireServer {
 
 	protected static final int DEFAULT_CACHE_SERVER_PORT = CacheServer.DEFAULT_PORT;
 	protected static final int DEFAULT_LOCATOR_PORT = DistributionLocator.DEFAULT_LOCATOR_PORT;
-	protected static final int DEFAULT_MANAGER_PORT = 1199;
+	protected static final int DEFAULT_MANAGER_PORT = 1099;
 
 	protected static final String DEFAULT_LOG_LEVEL = "config";
 
@@ -57,7 +57,8 @@ public class SpringBootGemFireServer {
 	}
 
 	@Bean
-	Properties gemfireProperties(@Value("${spring.gemfire.log-level:"+DEFAULT_LOG_LEVEL+"}") String logLevel,
+	Properties gemfireProperties(
+			@Value("${spring.gemfire.log-level:"+DEFAULT_LOG_LEVEL+"}") String logLevel,
 			@Value("${spring.gemfire.locators:localhost["+DEFAULT_LOCATOR_PORT+"]}") String locators,
 			@Value("${spring.gemfire.manager.port:"+DEFAULT_MANAGER_PORT+"}") int managerPort,
 			@Value("${spring.gemfire.manager.start:false}") boolean jmxManagerStart,
@@ -143,15 +144,15 @@ public class SpringBootGemFireServer {
 				Long number = helper.getKey();
 
 				Assert.notNull(number, "Number must not be null");
-				Assert.isTrue(number >= 0, String.format("Number [%1$d] must be greater than equal to 0", number));
+				Assert.isTrue(number >= 0, String.format("Number [%d] must be greater than equal to 0", number));
 
-				if (number <= 2l) {
-					return (number < 2l ? 1l : 2l);
+				if (number <= 2L) {
+					return (number < 2L ? 1L : 2L);
 				}
 
 				long result = number;
 
-				while (number-- > 2l) {
+				while (number-- > 2L) {
 					result *= number;
 				}
 

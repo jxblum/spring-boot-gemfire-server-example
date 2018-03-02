@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @since 1.0.0
  */
 @SpringBootApplication
-@SuppressWarnings("unused")
+@SuppressWarnings("all")
 public class SpringBootGemFireServer {
 
 	protected static final int DEFAULT_CACHE_SERVER_PORT = CacheServer.DEFAULT_PORT;
@@ -50,10 +50,6 @@ public class SpringBootGemFireServer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootGemFireServer.class);
-	}
-
-	String applicationName() {
-		return SpringBootGemFireServer.class.getSimpleName();
 	}
 
 	@Bean
@@ -83,8 +79,13 @@ public class SpringBootGemFireServer {
 		return gemfireProperties;
 	}
 
+	String applicationName() {
+		return SpringBootGemFireServer.class.getSimpleName();
+	}
+
 	@Bean
 	CacheFactoryBean gemfireCache(@Qualifier("gemfireProperties") Properties gemfireProperties) {
+
 		CacheFactoryBean gemfireCache = new CacheFactoryBean();
 
 		gemfireCache.setClose(true);
@@ -129,6 +130,7 @@ public class SpringBootGemFireServer {
 	@Bean
 	@SuppressWarnings("unchecked")
 	RegionAttributesFactoryBean factorialRegionAttributes() {
+
 		RegionAttributesFactoryBean factorialRegionAttributes = new RegionAttributesFactoryBean();
 
 		factorialRegionAttributes.setKeyConstraint(Long.class);
@@ -138,9 +140,12 @@ public class SpringBootGemFireServer {
 	}
 
 	CacheLoader<Long, Long> factorialsCacheLoader() {
+
 		return new CacheLoader<Long, Long>() {
+
 			@Override
 			public Long load(LoaderHelper<Long, Long> helper) throws CacheLoaderException {
+
 				Long number = helper.getKey();
 
 				Assert.notNull(number, "Number must not be null");

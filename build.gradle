@@ -12,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'spring-boot'
 
-description = 'Spring Boot GemFire Server Example'
+description = 'Spring Boot Pivotal GemFire Server Example'
 group = 'io.pivotal'
 
 sourceCompatibility = 1.8
@@ -25,18 +25,22 @@ repositories {
 }
 
 dependencies {
-    compile "org.assertj:assertj-core:$assertjVersion"
+
+    compile "org.assertj:assertj-core"
+
     compile("org.springframework.boot:spring-boot-starter:$springBootVersion") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
-    compile "org.springframework.data:spring-data-gemfire:$springDataGemFireVersion"
 
-    runtime "org.slf4j:slf4j-api:$slf4jVersion"
-    runtime "org.slf4j:slf4j-simple:$slf4jVersion"
-    runtime "org.slf4j:log4j-over-slf4j:$slf4jVersion"
+    compile "org.springframework.data:spring-data-gemfire"
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    runtime "org.slf4j:slf4j-api"
+    runtime "org.slf4j:slf4j-simple"
+    runtime "org.slf4j:log4j-over-slf4j"
     runtime "org.springframework.shell:spring-shell:$springShellVersion"
 
-    testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
 }
 
 jar {

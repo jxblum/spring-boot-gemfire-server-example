@@ -7,10 +7,14 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.spring.dependency-management" version "1.0.4.RELEASE"
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 description = 'Spring Boot Pivotal GemFire Server Example'
 group = 'io.pivotal'

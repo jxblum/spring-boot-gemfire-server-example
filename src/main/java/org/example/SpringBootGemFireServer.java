@@ -5,9 +5,6 @@ import org.apache.geode.cache.CacheLoader;
 import org.apache.geode.cache.CacheLoaderException;
 import org.apache.geode.cache.LoaderHelper;
 import org.apache.geode.cache.RegionAttributes;
-import org.apache.geode.cache.server.CacheServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +14,6 @@ import org.springframework.data.gemfire.RegionAttributesFactoryBean;
 import org.springframework.data.gemfire.config.annotation.CacheServerApplication;
 import org.springframework.data.gemfire.config.annotation.EnableLocator;
 import org.springframework.data.gemfire.config.annotation.EnableManager;
-import org.springframework.data.gemfire.util.DistributedSystemUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -38,12 +34,6 @@ import org.springframework.util.Assert;
 @EnableManager
 @SuppressWarnings("all")
 public class SpringBootGemFireServer {
-
-	protected static final int DEFAULT_CACHE_SERVER_PORT = CacheServer.DEFAULT_PORT;
-	protected static final int DEFAULT_LOCATOR_PORT = DistributedSystemUtils.DEFAULT_LOCATOR_PORT;
-	protected static final int DEFAULT_MANAGER_PORT = 1099;
-
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootGemFireServer.class);

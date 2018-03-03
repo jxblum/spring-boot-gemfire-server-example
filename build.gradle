@@ -18,9 +18,12 @@ apply plugin: 'org.springframework.boot'
 
 description = 'Spring Boot Pivotal GemFire Server Example'
 group = 'io.pivotal'
+version = '1.0.0.SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+ext['log4j2.version'] = '2.8.2'
 
 repositories {
     maven { url 'https://repo.spring.io/libs-release' }
@@ -40,14 +43,23 @@ dependencies {
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
-    runtime "org.slf4j:slf4j-api"
-    runtime "org.slf4j:slf4j-simple"
-    runtime "org.slf4j:log4j-over-slf4j"
+    runtime "org.apache.shiro:shiro-spring:1.3.2"
+
+    runtime("org.springframework.boot:spring-boot-starter-jetty:$springBootVersion") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
     runtime "org.springframework.shell:spring-shell:$springShellVersion"
 
 }
 
-jar {
-    baseName = 'spring-boot-gemfire-server-example'
-    version = '1.0.0.SNAPSHOT'
+springBoot {
+    buildInfo {
+        properties {
+            group = 'io.pivotal.spring'
+            artifact = 'spring-boot-gemfire-server'
+            version = '1.0.0.SNAPSHOT'
+            name = 'Spring Boot Pivotal GemFire Server Example'
+        }
+    }
 }

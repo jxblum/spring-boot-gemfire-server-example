@@ -541,97 +541,133 @@ cluster with and without *Spring*. Hopefully this gives you a Springy way to get
 For any issues or feedback on this project, please file a [GitHub Issue](https://github.com/jxblum/spring-boot-gemfire-server-example/issues).
 
 The only known issue (at the moment) is when running the *Spring Boot GemFire Server* using the "executable" JAR file,
-*Pivotal GemFire* (and possibly *Apache Geode*; not sure if this was fixed in *Geode* already) will log an
-`IllegalStateException` stating that *GemFire/Geode* cannot find the *Gfsh* command classes on the classpath.
+*Pivotal GemFire* and *Apache Geode* will log an `NoClassDefFoundError` stating that *GemFire/Geode* cannot find
+the `org.apache.geode.logging.log4j.LogManager` class:
 
 For instance...
 
 ```
-[warn 2016/06/21 16:10:00.482 PDT <main> tid=0xb] (tid=11 msgId=0) Required Commands classes were not loaded. Check logs for errors.
-java.lang.IllegalStateException: Required Commands classes were not loaded. Check logs for errors.
-	at com.gemstone.gemfire.management.internal.cli.CommandManager.raiseExceptionIfEmpty(CommandManager.java:240)
-	at com.gemstone.gemfire.management.internal.cli.CommandManager.loadCommands(CommandManager.java:179)
-	at com.gemstone.gemfire.management.internal.cli.CommandManager.<init>(CommandManager.java:77)
-	at com.gemstone.gemfire.management.internal.cli.CommandManager.getInstance(CommandManager.java:269)
-	at com.gemstone.gemfire.management.internal.cli.CommandManager.getInstance(CommandManager.java:249)
-	at com.gemstone.gemfire.management.internal.cli.remote.CommandProcessor.<init>(CommandProcessor.java:50)
-	at com.gemstone.gemfire.management.internal.cli.remote.MemberCommandService.<init>(MemberCommandService.java:32)
-	at com.gemstone.gemfire.management.cli.CommandService.createLocalCommandService(CommandService.java:138)
-	at com.gemstone.gemfire.management.internal.beans.MemberMBeanBridge.<init>(MemberMBeanBridge.java:352)
-	at com.gemstone.gemfire.management.internal.beans.ManagementAdapter.handleCacheCreation(ManagementAdapter.java:152)
-	at com.gemstone.gemfire.management.internal.beans.ManagementListener.handleEvent(ManagementListener.java:111)
-	at com.gemstone.gemfire.distributed.internal.InternalDistributedSystem.notifyResourceEventListeners(InternalDistributedSystem.java:2243)
-	at com.gemstone.gemfire.distributed.internal.InternalDistributedSystem.handleResourceEvent(InternalDistributedSystem.java:503)
-	at com.gemstone.gemfire.internal.cache.GemFireCacheImpl.init(GemFireCacheImpl.java:1009)
-	at com.gemstone.gemfire.internal.cache.GemFireCacheImpl.create(GemFireCacheImpl.java:682)
-	at com.gemstone.gemfire.cache.CacheFactory.create(CacheFactory.java:182)
-	at com.gemstone.gemfire.cache.CacheFactory.create(CacheFactory.java:229)
-	at org.springframework.data.gemfire.CacheFactoryBean.createCache(CacheFactoryBean.java:356)
-	at org.springframework.data.gemfire.CacheFactoryBean.resolveCache(CacheFactoryBean.java:250)
-	at org.springframework.data.gemfire.CacheFactoryBean.init(CacheFactoryBean.java:191)
-	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:178)
-	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:88)
-	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.doGetObjectFromFactoryBean(FactoryBeanRegistrySupport.java:168)
-	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.getObjectFromFactoryBean(FactoryBeanRegistrySupport.java:103)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getObjectForBeanInstance(AbstractBeanFactory.java:1590)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:254)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAutowireCandidates(DefaultListableBeanFactory.java:1192)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1116)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1014)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:813)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:741)
-	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:464)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1123)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1018)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:510)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:482)
-	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:306)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:302)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:753)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:839)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:538)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:766)
-	at org.springframework.boot.SpringApplication.createAndRefreshContext(SpringApplication.java:361)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:307)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1191)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1180)
-	at org.example.SpringBootGemFireServer.main(SpringBootGemFireServer.java:52)
+[warn 2018/03/02 17:21:00.947 PST <main> tid=0x1] org/apache/logging/log4j/LogManager
+java.lang.NoClassDefFoundError: org/apache/logging/log4j/LogManager
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:763)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)
+	at java.net.URLClassLoader.access$100(URLClassLoader.java:73)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:368)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:362)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:361)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	at org.apache.geode.internal.ClassPathLoader.<clinit>(ClassPathLoader.java:66)
+	at org.apache.geode.internal.GemFireVersion$VersionDescription.<init>(GemFireVersion.java:191)
+	at org.apache.geode.internal.GemFireVersion.getDescription(GemFireVersion.java:52)
+	at org.apache.geode.internal.GemFireVersion.getGemFireVersion(GemFireVersion.java:66)
+	at org.apache.geode.internal.GemFireVersion.getGemFireJarFileName(GemFireVersion.java:98)
+	at org.apache.geode.management.internal.cli.commands.LauncherLifecycleCommands.<clinit>(LauncherLifecycleCommands.java:145)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at java.lang.Class.newInstance(Class.java:442)
+	at org.apache.geode.management.internal.cli.CommandManager.loadGeodeCommands(CommandManager.java:228)
+	at org.apache.geode.management.internal.cli.CommandManager.loadCommands(CommandManager.java:176)
+	at org.apache.geode.management.internal.cli.CommandManager.<init>(CommandManager.java:83)
+	at org.apache.geode.management.internal.cli.GfshParser.<init>(GfshParser.java:64)
+	at org.apache.geode.management.internal.cli.remote.CommandProcessor.<init>(CommandProcessor.java:59)
+	at org.apache.geode.management.internal.cli.remote.MemberCommandService.<init>(MemberCommandService.java:37)
+	at org.apache.geode.management.cli.CommandService.createLocalCommandService(CommandService.java:127)
+	at org.apache.geode.management.internal.beans.MemberMBeanBridge.<init>(MemberMBeanBridge.java:348)
+	at org.apache.geode.management.internal.beans.ManagementAdapter.handleCacheCreation(ManagementAdapter.java:142)
+	at org.apache.geode.management.internal.beans.ManagementListener.handleEvent(ManagementListener.java:106)
+	at org.apache.geode.distributed.internal.InternalDistributedSystem.notifyResourceEventListeners(InternalDistributedSystem.java:2156)
+	at org.apache.geode.distributed.internal.InternalDistributedSystem.handleResourceEvent(InternalDistributedSystem.java:546)
+	at org.apache.geode.internal.cache.GemFireCacheImpl.initialize(GemFireCacheImpl.java:1183)
+	at org.apache.geode.internal.cache.GemFireCacheImpl.basicCreate(GemFireCacheImpl.java:758)
+	at org.apache.geode.internal.cache.GemFireCacheImpl.create(GemFireCacheImpl.java:745)
+	at org.apache.geode.cache.CacheFactory.create(CacheFactory.java:173)
+	at org.apache.geode.cache.CacheFactory.create(CacheFactory.java:212)
+	at java.util.Optional.orElseGet(Optional.java:267)
+	at org.springframework.data.gemfire.CacheFactoryBean.createCache(CacheFactoryBean.java:431)
+	at org.springframework.data.gemfire.CacheFactoryBean.resolveCache(CacheFactoryBean.java:312)
+	at org.springframework.data.gemfire.CacheFactoryBean.init(CacheFactoryBean.java:263)
+	at java.util.Optional.orElseGet(Optional.java:267)
+	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:738)
+	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:106)
+	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.doGetObjectFromFactoryBean(FactoryBeanRegistrySupport.java:161)
+	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.getObjectFromFactoryBean(FactoryBeanRegistrySupport.java:101)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getObjectForBeanInstance(AbstractBeanFactory.java:1645)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getObjectForBeanInstance(AbstractAutowireCapableBeanFactory.java:1178)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:251)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1138)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1065)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:815)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:721)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:470)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1250)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1099)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:545)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:502)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:228)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:310)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:741)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:868)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:549)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:140)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:388)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:327)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1246)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1234)
+	at org.example.SpringBootGemFireServer.main(SpringBootGemFireServer.java:45)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:54)
-	at java.lang.Thread.run(Thread.java:745)
+	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:50)
+	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:51)
+Caused by: java.lang.ClassNotFoundException: org.apache.logging.log4j.LogManager
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 84 more
 
-[main] INFO org.springframework.data.gemfire.CacheFactoryBean - Connected to Distributed System [SpringBootGemFireServer] as Member [10.99.199.9(SpringBootGemFireServer:82732)<v49>:59271]in Group(s) [[]] with Role(s) [[]] on Host [10.99.199.9] having PID [82732].
+...
+
+[info 2018/03/02 17:21:01.393 PST <main> tid=0x1] CacheServer Configuration:   port=40404
+  max-connections=800 max-threads=0 notify-by-subscription=true socket-buffer-size=32768
+  maximum-time-between-pings=60000 maximum-message-count=230000 message-time-to-live=180
+  eviction-policy=none capacity=1 overflow directory=. groups=[] loadProbe=ConnectionCountProbe
+  loadPollInterval=5000 tcpNoDelay=true
 ```
 
 This is both unfortunate and misleading since as the last log statement indicates, the member starts up
 and joins the cluster just fine.
 
-When the member is a *Manager*, the *Locator/Server* needs these command classes to carry out
-the execution of "remote" commands when issued by a JMX client (e.g. *Gfsh*) to the management service.
-Therefore loading the command classes is legitimate, but only when the member is actually a *Manager*.
-
-Pivotal GemFire uses a broken class loading mechanism when its own "custom", Java `ClassLoader` is in use.
-This is problematic when executing *GemFire* from an "executable" *Spring Boot* created "executable" JAR file
+Pivotal GemFire and Apache Geode uses a broken class loading mechanism when its own "custom", Java `java.lang.ClassLoader`
+(i.e. [`org.apache.geode.internal.ClassPathLoader`](https://github.com/apache/geode/blob/rel/v1.4.0/geode-core/src/main/java/org/apache/geode/internal/ClassPathLoader.java))
+is in use.  This is problematic when executing *GemFire* from an "executable" *Spring Boot* created "executable" JAR file
 (i.e. a JAR file containing all the application dependencies).
 
-_Spring Boot_ also uses a "custom" `ClassLoader` of its own to load dependency JAR files contained in
+_Spring Boot_ also uses a "custom" Java `java.lang.ClassLoader` of its own to load dependency JAR files contained in
 the application JAR file itself.  However, *GemFire/Geode* knows nothing about the *Spring Boot* `ClassLoader`,
-and even though the `spring-shell-1.0.0.RELEASE.jar` is contained in the `lib/` sub-directory relative to
+and even though the `log4j-api-2.8.2.jar` is contained in the `BOOT-INF/lib/` sub-directory relative to
 the root of "executable" JAR file (`spring-boot-gemfire-server-example-1.0.0.SNAPSHOT.jar`), it is not able to
-find and resolve the *Spring Shell* classes needed by the *Gfsh* command classes running the server (a *Manager*),
-and so this `IllegalStateException` occurs when running with the "executable" application JAR file.
+find and resolve the *Log4J* classes needed by *GemFire/Geode* classes running the server (a *Manager*),
+and so this `NoClassDefFoundError` occurs when running with the "executable" application JAR file.
 
 This problem does **not** occur when using the *Spring Boot Gradle Plugin* because the application lib dependencies
 are not contained in a JAR file and instead, the application is just run from the command-line as if doing...
 
 ```
-// classpath with spring-shell-1.0.0.RELEASE.jar
+// classpath with log4j-api-2.8.2.jar
 
 $ java ... -classpath=".." org.example.SpringBootGemFireServer ...
 ```

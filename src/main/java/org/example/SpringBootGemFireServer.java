@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * @since 1.0.0
  */
 @SpringBootApplication
-@CacheServerApplication(name = "SpringBootGemFireServer")
+@CacheServerApplication(name = "SpringBootGeodeServer")
 @EnableLocator
 @EnableManager
 @SuppressWarnings("all")

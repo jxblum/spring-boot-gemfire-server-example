@@ -39,7 +39,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 
-    compile "org.springframework.data:spring-data-gemfire"
+    compile "org.springframework.data:spring-data-geode"
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 

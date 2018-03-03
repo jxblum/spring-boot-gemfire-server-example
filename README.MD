@@ -4,12 +4,13 @@ The *Spring Boot GemFire Server Example* project demonstrates how to configure a
 an embedded *Pivotal GemFire* or *Apache Geode* Server (i.e. a peer cache member/data node)
 in a *Spring Boot* application JVM process.
 
-The *GemFire Server* is configured using *Spring (Data GemFire)*, Java-based configuration meta-data
-(not XML) and assumes (OOTB) the user wants to connect this server to an existing *GemFire Cluster*.
-The supposedly, existing *GemFire Cluster* is defined by a *GemFire Locator* running on `localhost`,
+The *GemFire Server* is configured using *Spring Data GemFire's*
+[new Annotation-based configuration model](https://docs.spring.io/spring-data/geode/docs/current/reference/html/#bootstrap-annotation-config)
+(not XML and not plain Java config) and assumes (OOTB) the user wants to connect this server to an existing *GemFire Cluster*.
+It is also assumed that this "existing" *GemFire Cluster* is defined by a *GemFire Locator* running on `localhost`,
 listening on port `10334` (the default *Locator* port) for member join requests.
 
-The *Spring* Java-based configuration meta-data allows for certain application properties
+The *Spring* Annotation-based configuration meta-data allows for certain application properties
 to be configured in order to adjust, among other things, *GemFire's* `log-level` or the `cluster`
 to which this server will connect, and so on.
 
@@ -17,14 +18,18 @@ More information on how to run this example is detailed below.
 
 ### Requirements
 
-* *Java Development Kit* (JDK) 1.8.0+ (e.g. 1.8.0_72).
-* *Gradle* 2.2+
+* *Java Development Kit* (JDK) 1.8.0+ (e.g. 1.8.0_152).
+* *Gradle* 4.6.
 
 ### Dependencies
 
-This project depends on *Spring Boot* `1.5.10.RELEASE`, *Spring Data GemFire* `1.9.10.RELEASE`
-and *Pivotal GemFire* `8.2.8`, the latest releases for each of these technologies at the time
+This project runs on *Spring Boot* `2.0.0.RELEASE` with *Spring Data GemFire* `2.0.5.RELEASE`
+and *Pivotal GemFire* `9.1.1`, the latest releases for each of these technologies at the time
 of this writing.
+
+Use the `spring-boot-15x-pivotal-gemfire-82x` branch to run this example on *Spring Boot*
+`1.5.10.RELEASE`, with *Spring Data GemFire* `1.9.10.RELEASE` and Pivotal GemFire `8.2.8`
+dependencies.
 
 > NOTE: versions may have been updated since this writing.
 
@@ -44,13 +49,16 @@ $ gradlew clean build install
 
 ### Run
 
+> **WARNING: This section still needs to be updated for _Spring Boot_ `2.0.0.RELEASE`,
+_Spring Data GemFire_ `2.0.5.RELEASE` and _Pivotal GemFire_ `9.1.1`.**
+
 To run this example, you will need a full installation of Pivotal GemFire installed on your system
 to use the GemFire Shell (i.e. _Gfsh_) tool from the command-line.
 
-For this example, I downloaded and installed *Pivotal GemFire* `8.2.0` from
+For this example, I downloaded and installed *Pivotal GemFire* `9.1.1` from
 [Pivotal.io](https://pivotal.io/pivotal-gemfire).
 
-See the *Pivotal GemFire* installation instructions [here](http://gemfire82.docs.pivotal.io/docs-gemfire/latest/getting_started/installation/install_intro.html).
+See the *Pivotal GemFire* installation instructions [here](http://gemfire91.docs.pivotal.io/gemfire/getting_started/installation/install_intro.html).
 
 ```
 $ echo $GEMFIRE
@@ -309,20 +317,16 @@ As you can see, the "`Factorials`" *Region* size changes as we request different
 It is also a simple matter to adjust the *Spring* configuration and perhaps add eviction or expiration policies
 (along with other settings) to prevent this *Region* from growing unbounded.
 
-
 ### Running with Apache Geode
 
-As previously alluded to, it is a simple matter to run this example with *Apache Geode* instead of
-*Pivotal GemFire*.  You simply only need to adjust the [dependency](https://github.com/jxblum/spring-boot-gemfire-server-example/blob/master/build.gradle#L32)
+It is a simple matter to run this example with *Apache Geode* instead of *Pivotal GemFire*.
+
+You simply only need to adjust the [dependency](https://github.com/jxblum/spring-boot-gemfire-server-example/blob/master/build.gradle#L42)
 from `spring-data-gemfire` to `spring-data-geode`.
 
-Additionally, you must change the version to use `$springDataGeodeVersion` from the [gradle.properties](https://github.com/jxblum/spring-boot-gemfire-server-example/blob/master/gradle.properties#L8)
-file.
+For your convenience, there is already a branch ("`apache-geode`") setup with *Apache Geode* configured.
 
-However, keep in mind, you must run a *Geode Locator* (instead of a *GemFire Locator*) when attempting to connect
-the server since the underlying membership protocol and stack has changed in *Apache Geode*
-(which is using a newer version of JGroups with a completely re-architected *GemFire/Geode Membership Service* (GMS)).
-
+Use an installation of *Apache Geode* to run *Locators* and *Servers* using _Gfsh_.
 
 ### Running with an Embedded GemFire/Geode Locator
 
@@ -519,17 +523,18 @@ ExampleServer           | 10.99.199.9(ExampleServer:83117)<v2>:62276
 This is because the cluster is defined by the "embedded" *Locator* running in our *Spring Boot GemFire Server*.
 
 
-### Additional Notes
+### Notes
 
-The only thing you cannot do with a *Spring*-based (configured and embedded) *GemFire Server* JVM process
-is to run `status server` or `stop server` in *Gfsh* (whether with *Spring Boot* or otherwise) on the member.
+The only thing you cannot do with a *Spring*-configured *GemFire Server*, JVM process
+is run `status server` or `stop server` in *Gfsh* on the member.
 
-The main reason for this is because the *Spring (Boot) GemFire Server* node was not started using *GemFire*
-infrastructure classes (namely, `ServerLauncher`) which registers a *Locator/Server* node with the *GemFire*
-management infrastructure to be "managed" and controlled accordingly.
+The main reason for this is because the *Spring (Boot) GemFire Server* node was not started
+with *GemFire* infrastructure classes (namely, `o.a.g.distributed ServerLauncher`),
+which registers a *Locator/Server* node with the *GemFire* management infrastructure
+to be "managed" and controlled accordingly.
 
-However, any *Spring*-based node is visible from *Gfsh* and other tools (e.g. *Pulse*, even *JConsole* or *JVisualVM*)
-and can be interacted with it.
+However, any *Spring*-configured node is visible from *Gfsh* and other tools
+(e.g. *Pulse*, even *JConsole* or *JVisualVM*) and can be interacted with it accordingly.
 
 ### Conclusion
 

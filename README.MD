@@ -552,25 +552,8 @@ the `org.apache.geode.logging.log4j.LogManager` class:
 For instance...
 
 ```
-[warn 2018/03/02 17:21:00.947 PST <main> tid=0x1] org/apache/logging/log4j/LogManager
-java.lang.NoClassDefFoundError: org/apache/logging/log4j/LogManager
-	at java.lang.ClassLoader.defineClass1(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:763)
-	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-	at java.net.URLClassLoader.defineClass(URLClassLoader.java:467)
-	at java.net.URLClassLoader.access$100(URLClassLoader.java:73)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:368)
-	at java.net.URLClassLoader$1.run(URLClassLoader.java:362)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:361)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	at org.apache.geode.internal.ClassPathLoader.<clinit>(ClassPathLoader.java:66)
-	at org.apache.geode.internal.GemFireVersion$VersionDescription.<init>(GemFireVersion.java:191)
-	at org.apache.geode.internal.GemFireVersion.getDescription(GemFireVersion.java:52)
-	at org.apache.geode.internal.GemFireVersion.getGemFireVersion(GemFireVersion.java:66)
-	at org.apache.geode.internal.GemFireVersion.getGemFireJarFileName(GemFireVersion.java:98)
-	at org.apache.geode.management.internal.cli.commands.LauncherLifecycleCommands.<clinit>(LauncherLifecycleCommands.java:145)
+java.lang.NoClassDefFoundError: org/apache/shiro/realm/Realm
+	at org.apache.geode.management.internal.cli.commands.IndexCommands.<init>(IndexCommands.java:87)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
 	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
 	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
@@ -594,11 +577,11 @@ java.lang.NoClassDefFoundError: org/apache/logging/log4j/LogManager
 	at org.apache.geode.cache.CacheFactory.create(CacheFactory.java:173)
 	at org.apache.geode.cache.CacheFactory.create(CacheFactory.java:212)
 	at java.util.Optional.orElseGet(Optional.java:267)
-	at org.springframework.data.gemfire.CacheFactoryBean.createCache(CacheFactoryBean.java:431)
-	at org.springframework.data.gemfire.CacheFactoryBean.resolveCache(CacheFactoryBean.java:312)
+	at org.springframework.data.gemfire.CacheFactoryBean.createCache(CacheFactoryBean.java:432)
+	at org.springframework.data.gemfire.CacheFactoryBean.resolveCache(CacheFactoryBean.java:313)
 	at org.springframework.data.gemfire.CacheFactoryBean.init(CacheFactoryBean.java:263)
 	at java.util.Optional.orElseGet(Optional.java:267)
-	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:738)
+	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:739)
 	at org.springframework.data.gemfire.CacheFactoryBean.getObject(CacheFactoryBean.java:106)
 	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.doGetObjectFromFactoryBean(FactoryBeanRegistrySupport.java:161)
 	at org.springframework.beans.factory.support.FactoryBeanRegistrySupport.getObjectFromFactoryBean(FactoryBeanRegistrySupport.java:101)
@@ -629,7 +612,7 @@ java.lang.NoClassDefFoundError: org/apache/logging/log4j/LogManager
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:327)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1246)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1234)
-	at org.example.SpringBootGemFireServer.main(SpringBootGemFireServer.java:45)
+	at org.example.SpringBootGemFireServer.main(SpringBootGemFireServer.java:39)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -638,11 +621,10 @@ java.lang.NoClassDefFoundError: org/apache/logging/log4j/LogManager
 	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
 	at org.springframework.boot.loader.Launcher.launch(Launcher.java:50)
 	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:51)
-Caused by: java.lang.ClassNotFoundException: org.apache.logging.log4j.LogManager
+Caused by: java.lang.ClassNotFoundException: org.apache.shiro.realm.Realm
 	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 84 more
 
 ...
 
@@ -658,14 +640,14 @@ and joins the cluster just fine.
 
 Pivotal GemFire and Apache Geode uses a broken class loading mechanism when its own "custom", Java `java.lang.ClassLoader`
 (i.e. [`org.apache.geode.internal.ClassPathLoader`](https://github.com/apache/geode/blob/rel/v1.4.0/geode-core/src/main/java/org/apache/geode/internal/ClassPathLoader.java))
-is in use.  This is problematic when executing *GemFire* from an "executable" *Spring Boot* created "executable" JAR file
+is in use.  This is problematic when executing *GemFire* from an "executable" *Spring Boot* created JAR file
 (i.e. a JAR file containing all the application dependencies).
 
 _Spring Boot_ also uses a "custom" Java `java.lang.ClassLoader` of its own to load dependency JAR files contained in
 the application JAR file itself.  However, *GemFire/Geode* knows nothing about the *Spring Boot* `ClassLoader`,
-and even though the `log4j-api-2.8.2.jar` is contained in the `BOOT-INF/lib/` sub-directory relative to
+and even though the `aache-shiro-1.3.2.jar` is contained in the `BOOT-INF/lib/` sub-directory relative to
 the root of "executable" JAR file (`spring-boot-gemfire-server-example-1.0.0.SNAPSHOT.jar`), it is not able to
-find and resolve the *Log4J* classes needed by *GemFire/Geode* classes running the server (a *Manager*),
+find and resolve the *Apache Shiro* classes needed by *GemFire/Geode* classes running the server (a *Manager*),
 and so this `NoClassDefFoundError` occurs when running with the "executable" application JAR file.
 
 This problem does **not** occur when using the *Spring Boot Gradle Plugin* because the application lib dependencies

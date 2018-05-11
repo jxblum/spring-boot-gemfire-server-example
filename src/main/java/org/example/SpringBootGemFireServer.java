@@ -1,18 +1,13 @@
 package org.example;
 
-import org.apache.geode.cache.Cache;
 import org.apache.geode.cache.CacheLoader;
 import org.apache.geode.cache.CacheLoaderException;
 import org.apache.geode.cache.LoaderHelper;
-import org.apache.geode.cache.RegionAttributes;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.gemfire.PartitionedRegionFactoryBean;
-import org.springframework.data.gemfire.RegionAttributesFactoryBean;
 import org.springframework.data.gemfire.config.annotation.CacheServerApplication;
 import org.springframework.data.gemfire.config.annotation.EnableLocator;
 import org.springframework.data.gemfire.config.annotation.EnableManager;
@@ -31,7 +26,8 @@ import org.springframework.util.Assert;
  * @since 1.0.0
  */
 @SpringBootApplication
-@CacheServerApplication(name = "SpringBootGeodeServer")
+@CacheServerApplication(name = "SpringBootGemFireServer", locators = "localhost[10334]")
+@ImportResource("spring-gemfire-server-cache.xml")
 @SuppressWarnings("all")
 public class SpringBootGemFireServer {
 
@@ -45,34 +41,7 @@ public class SpringBootGemFireServer {
 	@Profile("locator-manager")
 	static class LocatorManagerConfiguration { }
 
-	@Bean(name = "Factorials")
-	PartitionedRegionFactoryBean factorialsRegion(Cache gemfireCache,
-			@Qualifier("factorialRegionAttributes") RegionAttributes<Long, Long> factorialRegionAttributes) {
-
-		PartitionedRegionFactoryBean<Long, Long> factorials = new PartitionedRegionFactoryBean<>();
-
-		factorials.setAttributes(factorialRegionAttributes);
-		factorials.setCache(gemfireCache);
-		factorials.setCacheLoader(factorialsCacheLoader());
-		factorials.setClose(false);
-		factorials.setPersistent(false);
-
-		return factorials;
-	}
-
-	@Bean
-	@SuppressWarnings("unchecked")
-	RegionAttributesFactoryBean factorialRegionAttributes() {
-
-		RegionAttributesFactoryBean factorialRegionAttributes = new RegionAttributesFactoryBean();
-
-		factorialRegionAttributes.setKeyConstraint(Long.class);
-		factorialRegionAttributes.setValueConstraint(Long.class);
-
-		return factorialRegionAttributes;
-	}
-
-	CacheLoader<Long, Long> factorialsCacheLoader() {
+	public static CacheLoader<Long, Long> factorialsCacheLoader() {
 
 		return new CacheLoader<Long, Long>() {
 

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.gemfire.PartitionedRegionFactoryBean;
 import org.springframework.data.gemfire.RegionAttributesFactoryBean;
 import org.springframework.data.gemfire.config.annotation.CacheServerApplication;
@@ -30,14 +32,18 @@ import org.springframework.util.Assert;
  */
 @SpringBootApplication
 @CacheServerApplication(name = "SpringBootGeodeServer")
-@EnableLocator
-@EnableManager
 @SuppressWarnings("all")
 public class SpringBootGemFireServer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringBootGemFireServer.class);
 	}
+
+	@Configuration
+	@EnableLocator
+	@EnableManager(start = true)
+	@Profile("locator-manager")
+	static class LocatorManagerConfiguration { }
 
 	@Bean(name = "Factorials")
 	PartitionedRegionFactoryBean factorialsRegion(Cache gemfireCache,
